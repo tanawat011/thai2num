@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>unbaht — อ่านตัวเลขภาษาไทยกลับเป็นตัวเลข</title>
+<style>
+  :root { color-scheme: light dark; --ok: #0a7d4f; --approx: #9a6700; --bg2: color-mix(in srgb, CanvasText 6%, Canvas); }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.6 system-ui, "Noto Sans Thai", "Sarabun", sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  p.lead { margin: 0 0 1.5rem; opacity: .8; }
+  textarea { width: 100%; min-height: 6rem; font: inherit; padding: .75rem; border-radius: .5rem; border: 1px solid color-mix(in srgb, CanvasText 25%, Canvas); background: Canvas; color: CanvasText; }
+  .row { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; align-items: center; margin: .75rem 0; }
+  button { font: inherit; font-size: .9rem; padding: .25rem .6rem; border-radius: .4rem; }
+  .box { white-space: pre-wrap; padding: .75rem; border-radius: .5rem; background: var(--bg2); margin: .5rem 0; }
+  mark { border-radius: .25rem; padding: 0 .15rem; background: color-mix(in srgb, var(--ok) 22%, transparent); outline: 1px solid var(--ok); }
+  mark.approx { background: color-mix(in srgb, var(--approx) 18%, transparent); outline: 1px dashed var(--approx); }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  th, td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid color-mix(in srgb, CanvasText 12%, Canvas); vertical-align: top; }
+  code { font-size: .9em; }
+  .muted { opacity: .7; font-size: .9rem; }
+  .err { color: #c62828; }
+  h2 { font-size: 1.05rem; margin: 1.25rem 0 .25rem; }
+</style>
+</head>
+<body>
+<h1>อ่านตัวเลขภาษาไทยกลับ · unbaht</h1>
+<p class="lead">พิมพ์จำนวนเงินหรือตัวเลขเป็นคำไทย ได้ค่าที่แม่นยำทุกหลัก — หรือวางทั้งย่อหน้าให้หาตัวเลขในข้อความ</p>
+
+<textarea id="in" spellcheck="false"></textarea>
+<div class="row">
+  <label><input type="checkbox" id="spoken" checked> อ่านแบบภาษาพูด (สองพันห้า = 2,500)</label>
+  <label><input type="checkbox" id="strict"> เคร่งตามหลัก (ไม่รับ สองสิบ, นึง)</label>
+</div>
+<div class="row">
+  <span class="muted">ลอง:</span>
+  <button data-x="หนึ่งพันสองร้อยห้าสิบบาทถ้วน">บาทถ้วน</button>
+  <button data-x="สามร้อยยี่สิบเอ็ดบาทห้าสิบสตางค์">สตางค์</button>
+  <button data-x="หนึ่งล้านห้าแสนล้าน">ล้านล้าน</button>
+  <button data-x="สองพันห้า">สองพันห้า</button>
+  <button data-x="ร้อยกว่า">ร้อยกว่า</button>
+  <button data-x="๑,๒๕๐.๕๐ บาท">เลขไทย</button>
+  <button data-x="สินค้าราคาสองพันห้าร้อยบาท ลดเหลือ 1.5 พัน มีคนซื้อไปแล้วหลายร้อยคน เขาสามารถส่งได้ภายในสามวัน โทร 081-234-5678">ในข้อความ</button>
+</div>
+
+<h2>ทั้งข้อความเป็นตัวเลขเดียว — <code>parse()</code></h2>
+<div id="whole" class="box"></div>
+
+<h2>ตัวเลขในข้อความ — <code>findAll()</code></h2>
+<div id="marked" class="box"></div>
+<table id="list"><thead><tr><th>ข้อความ</th><th>ค่า</th><th>รายละเอียด</th></tr></thead><tbody></tbody></table>
+<p class="muted">ช่วงประมาณ (เช่น ร้อยกว่า) ไม่ถูกแปลงเป็นตัวเลขเดียว แต่ได้เป็นช่วง · ทุกอย่างทำงานในเบราว์เซอร์</p>
+
+<script src="../dist/unbaht.global.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const group = (v) => v.replace(/^(-?)(\d+)/, (_, s, d) => s + d.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+  function describe(r) {
+    if (r.approx) {
+      const lo = r.min === undefined ? "" : (r.minInclusive ? "≥ " : "> ") + group(r.min);
+      const hi = r.max === undefined ? "" : (r.maxInclusive ? "≤ " : "< ") + group(r.max);
+      const words = { more: "มากกว่า", about: "ประมาณ", almost: "เกือบ", several: "หลาย", order: "หลัก" }[r.kind];
+      return { value: [lo, hi].filter(Boolean).join(" และ ") || "≈ " + group(r.said), note: `${words} (${r.kind}) · พูดว่า ${group(r.said)}${r.unit ? " บาท" : ""}` };
+    }
+    const notes = [];
+    if (r.unit) notes.push(`${group(r.baht)} บาท ${r.satang ?? ""} สตางค์`);
+    if (r.reading === "spoken") notes.push("อ่านแบบภาษาพูด");
+    if (r.alternative) notes.push(`อีกความหมาย: ${group(r.alternative)}`);
+    if (r.number === undefined) notes.push("ใหญ่เกินกว่า number ของ JS จะแม่น — ใช้ value");
+    return { value: group(r.value), note: notes.join(" · ") };
+  }
+  function render() {
+    if (!window.unbaht) { $("whole").innerHTML = '<span class="err">ยังไม่ได้ build: รัน npm run build ก่อน แล้วเปิดไฟล์นี้ใหม่</span>'; return; }
+    const text = $("in").value;
+    const opts = { spoken: $("spoken").checked, strict: $("strict").checked };
+    try {
+      const r = unbaht.parse(text, opts);
+      const d = describe(r);
+      $("whole").innerHTML = `<strong>${esc(d.value)}</strong> <span class="muted">${esc(d.note)}</span>`;
+    } catch (e) {
+      $("whole").innerHTML = `<span class="err">${esc(e.message)}</span>`;
+    }
+    const found = unbaht.findAll(text, opts);
+    let html = "", at = 0;
+    for (const f of found) {
+      html += esc(text.slice(at, f.from)) + `<mark class="${f.approx ? "approx" : ""}">${esc(f.text)}</mark>`;
+      at = f.to;
+    }
+    $("marked").innerHTML = html + esc(text.slice(at));
+    document.querySelector("#list tbody").innerHTML = found.map((f) => { const d = describe(f); return `<tr><td>${esc(f.text)}</td><td>${esc(d.value)}</td><td class="muted">${esc(d.note)}</td></tr>`; }).join("");
+  }
+  $("in").addEventListener("input", render);
+  $("spoken").addEventListener("change", render);
+  $("strict").addEventListener("change", render);
+  document.querySelectorAll("[data-x]").forEach((b) => b.addEventListener("click", () => { $("in").value = b.dataset.x; render(); }));
+  $("in").value = "สามร้อยยี่สิบเอ็ดบาทห้าสิบสตางค์";
+  render();
+</script>
+</body>
+</html>
