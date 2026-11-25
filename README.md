@@ -43,11 +43,15 @@ to be the careful version of that:
 
 ## Install
 
+thai2num is not on npm. Install it straight from GitHub (npm builds it on install):
+
 ```sh
-npm install thai2num
+npm install github:tanawat011/thai2num
 ```
 
-A `<script>` build is in the package too: `dist/thai2num.global.js` (global `thai2num`).
+Or clone it and run `npm ci && npm run build`. A `<script>` build comes with it: `dist/thai2num.global.js` (global `thai2num`).
+
+⚠️ A package called `thai2num` on the npm registry is not this one.
 
 ## API
 
@@ -203,5 +207,13 @@ parse("ร้อยกว่า");   // ช่วง (100, 200) ติดธง 
 - `สองสาม` (สองหรือสาม) ไม่แปลงเป็นช่วง: `parse` ปฏิเสธ `findAll` ข้าม
 - `findAll` ไม่ได้ตัดคำภาษาไทยเต็มรูปแบบ ใช้รายการคำที่ขึ้นต้นเหมือนตัวเลข คำที่ไม่อยู่ในรายการอาจอ่านผิดได้
 - ไม่รองรับลำดับที่ (ที่หนึ่ง), เศษส่วนอื่นนอกจากครึ่ง, เปอร์เซ็นต์ (`ร้อยละห้า` ได้ 5)
+
+### ติดตั้ง
+
+ไม่ได้อยู่บน npm ติดตั้งจาก GitHub ตรง ๆ (npm จะ build ให้ตอนติดตั้ง) — แพ็กเกจชื่อ `thai2num` บน npm ไม่ใช่ตัวนี้
+
+```sh
+npm install github:tanawat011/thai2num
+```
 
 สัญญาอนุญาต MIT
