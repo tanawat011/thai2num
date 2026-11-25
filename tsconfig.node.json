@@ -1,0 +1,10 @@
+{
+  // CLI, scripts and tests run on Node.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "lib": ["ES2022"]
+  },
+  "include": ["src", "scripts", "test", "*.ts"],
+  "exclude": []
+}
