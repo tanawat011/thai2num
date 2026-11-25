@@ -11,10 +11,10 @@ export default defineConfig([
     treeshake: true,
   },
   {
-    // one file for <script> tags and the demo page: window.unbaht
-    entry: { "unbaht.global": "src/index.ts" },
+    // one file for <script> tags and the demo page: window.thai2num
+    entry: { "thai2num.global": "src/index.ts" },
     format: ["iife"],
-    globalName: "unbaht",
+    globalName: "thai2num",
     minify: true,
     target: "es2020",
     platform: "browser",

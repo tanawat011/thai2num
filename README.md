@@ -1,10 +1,10 @@
-# unbaht
+# thai2num
 
 **Read Thai number words back into exact numbers** — the reverse of baht-text — and find them in
 running text.
 
 ```ts
-import { parse, findAll } from "unbaht";
+import { parse, findAll } from "thai2num";
 
 parse("หนึ่งพันสองร้อยห้าสิบบาทถ้วน").value;      // "1250"
 parse("สามร้อยยี่สิบเอ็ดบาทห้าสิบสตางค์").value;   // "321.50"
@@ -24,7 +24,7 @@ findAll("ราคาสองพันห้าร้อยบาท ลดเ�
 
 Turning a number into Thai words is well covered on npm (`thai-baht-text`, `bahttext`, `baht` …).
 Going back — reading what someone typed or said — we could not find in JavaScript (we looked on
-npm in November 2026); PyThaiNLP has `thaiword_to_num` and `words_to_num` for Python. unbaht aims
+npm in November 2026); PyThaiNLP has `thaiword_to_num` and `words_to_num` for Python. thai2num aims
 to be the careful version of that:
 
 - **Exact.** Values come back as decimal strings computed with BigInt: baht and satang never
@@ -44,10 +44,10 @@ to be the careful version of that:
 ## Install
 
 ```sh
-npm install unbaht
+npm install thai2num
 ```
 
-A `<script>` build is in the package too: `dist/unbaht.global.js` (global `unbaht`).
+A `<script>` build is in the package too: `dist/thai2num.global.js` (global `thai2num`).
 
 ## API
 
@@ -173,10 +173,10 @@ MIT. No third-party data.
 
 ## ภาษาไทย
 
-**unbaht อ่านตัวเลขที่เขียนเป็นคำไทยกลับเป็นตัวเลขที่แม่นยำ** (กลับด้านของ baht-text) และหาตัวเลขในข้อความยาว ๆ ได้
+**thai2num อ่านตัวเลขที่เขียนเป็นคำไทยกลับเป็นตัวเลขที่แม่นยำ** (กลับด้านของ baht-text) และหาตัวเลขในข้อความยาว ๆ ได้
 
 ```ts
-import { parse, findAll } from "unbaht";
+import { parse, findAll } from "thai2num";
 parse("หนึ่งพันสองร้อยห้าสิบบาทถ้วน").value;     // "1250"
 parse("สามร้อยยี่สิบเอ็ดบาทห้าสิบสตางค์").value;  // "321.50"
 parse("ร้อยกว่า");   // ช่วง (100, 200) ติดธง approx — ไม่แต่งตัวเลขเดี่ยวขึ้นมาเอง
@@ -185,7 +185,7 @@ parse("ร้อยกว่า");   // ช่วง (100, 200) ติดธง 
 ### ต่างจากที่มีอย่างไร
 
 บน npm มีไลบรารีแปลง **ตัวเลข → คำไทย** หลายตัว แต่ทางกลับ (คำไทย → ตัวเลข) เราหาใน JavaScript ไม่เจอ
-(ค้นเมื่อ พ.ย. 2569) ฝั่ง Python มี `thaiword_to_num` / `words_to_num` ของ PyThaiNLP — unbaht ตั้งใจทำเวอร์ชันที่รอบคอบ:
+(ค้นเมื่อ พ.ย. 2569) ฝั่ง Python มี `thaiword_to_num` / `words_to_num` ของ PyThaiNLP — thai2num ตั้งใจทำเวอร์ชันที่รอบคอบ:
 
 - **แม่นยำทุกหลัก** — ค่าเป็นสตริงทศนิยมที่คำนวณด้วย BigInt บาทและสตางค์ไม่ปัดเศษ ล้านล้านล้านไม่หายสักหลัก ให้ `number` ของ JS เฉพาะตอนที่แม่นจริง
 - **เงิน** — บาท สตางค์ ถ้วน/ตรง แยก `baht` กับ `satang` ให้

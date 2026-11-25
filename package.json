@@ -1,5 +1,5 @@
 {
-  "name": "unbaht",
+  "name": "thai2num",
   "version": "0.1.0",
   "description": "Read Thai number words back into exact numbers: หนึ่งพันสองร้อยห้าสิบบาทถ้วน → 1250, สามร้อยยี่สิบเอ็ดบาทห้าสิบสตางค์ → 321.50, 1.5 ล้าน, แสนห้า, ร้อยกว่า (a range, never a made-up exact number). Finds numbers in running text too.",
   "keywords": [
